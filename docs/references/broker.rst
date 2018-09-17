@@ -15,10 +15,34 @@ The following example shows how to start a broker using the default configuratio
     import os
     from hbmqtt.broker import Broker
 
+    logger = logging.getLogger(__name__)
 
+    config = {
+        'listeners': {
+            'default': {
+                'type': 'tcp',
+                'bind': '127.0.0.1:1883',
+            },
+            'ws-mqtt': {
+                'bind': '127.0.0.1:8090',
+                'type': 'ws',
+                'max_connections': 10,
+            },
+        },
+        'sys_interval': 10,
+        'auth': {
+            'allow-anonymous': True,
+            'password-file': os.path.join(os.path.dirname(os.path.realpath(__file__)), "passwd"),
+            'plugins': [
+                'auth_file', 'auth_anonymous'
+            ]
+
+        }
+    }
+    
     @asyncio.coroutine
     def broker_coro():
-        broker = Broker()
+        broker = Broker(config)
         yield from broker.start()
 
 
